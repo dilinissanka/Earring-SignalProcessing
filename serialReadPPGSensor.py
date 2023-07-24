@@ -11,7 +11,7 @@ def main():
 
 def readSerial():
     file_name = input('Please enter file name:')
-    file_name = 'C:\\Users\\dil-p\\Earring++\\Earring-\\PPGData\\finger\\'+ file_name + '.txt'
+    file_name = file_name + '.txt'
     serialInst.open()
     output_list = []
     try:

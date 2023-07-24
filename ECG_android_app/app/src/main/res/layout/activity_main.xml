@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity"
+    android:background="#FFFFFF">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/Theme.Ble_keyboard.AppBarOverlay">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="#5B2FD2"
+            app:popupTheme="@style/Theme.Ble_keyboard.PopupOverlay" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+
+    <!-- Here is where we will be adding in the place where you can enter
+         what device you want to search for -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Necklace name: "
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:textSize="26dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="65dp"/>
+
+    <EditText
+        android:id="@+id/neckalce_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:textColorHint="@color/black"
+        android:textSize="16dp"
+        android:hint="Enter Necklace name"
+        android:layout_marginTop="60dp"
+        android:layout_marginLeft="225dp"/>
+
+    <Button
+        android:id="@+id/start_connection"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="110dp"
+        android:layout_marginLeft="105dp"
+        android:textColor="@color/white"
+        android:text="Start Connection"/>
+
+    <!-- This is where we will be updating the vital information of the user such as the users
+    heart rate information and the users -->
+
+    <TextView
+        android:id="@+id/connected_devices"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#FF0000"
+        android:text="No connected Devices"
+        android:layout_marginLeft="80dp"
+        android:layout_marginTop="210dp"
+        android:textSize="24dp"
+        android:textStyle="bold">
+    </TextView>
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/necklace_list"
+        android:layout_width="213dp"
+        android:layout_height="95dp"
+        android:layout_marginLeft="85dp"
+        android:layout_marginTop="215dp" />
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="72dp"
+        android:layout_marginTop="470dp"
+        android:rotation="270"
+        android:text="Voltage(V)"
+        android:textColor="@color/black"
+        android:textStyle="bold"></TextView>
+
+    <com.jjoe64.graphview.GraphView
+        android:id="@+id/graph"
+        android:layout_width="306dp"
+        android:layout_height="231dp"
+        android:layout_marginLeft="14dp"
+        android:layout_marginTop="315dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="125dp"
+        android:layout_marginTop="710dp"
+        android:text="Time (Previous 10 seconds)"
+        android:textColor="@color/black"
+        android:textSize="14dp"
+        android:textStyle="bold"></TextView>
+
+    <Button
+        android:id="@+id/ecg_button"
+        android:layout_width="wrap_content"
+        android:layout_height="44dp"
+        android:layout_marginLeft="35dp"
+        android:layout_marginTop="550dp"
+        android:text="Graph ECG"
+        android:textColor="@color/white" />
+
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+
+
+
+
+
+
+
+
+
+<!--
+<View
+android:layout_width="340dp"
+android:layout_height="2dp"
+android:background="@color/black"
+android:layout_marginLeft="45dp"
+android:layout_marginTop="513dp" />
+
+<View
+android:layout_width="2dp"
+android:layout_height="317dp"
+android:background="@color/black"
+android:layout_marginLeft="45dp"
+android:layout_marginTop="355dp" />
+
+<androidx.constraintlayout.widget.ConstraintLayout
+android:id="@+id/ecg_graph"
+android:layout_width="340dp"
+android:layout_height="300dp"
+android:layout_marginTop="355dp"
+android:layout_marginLeft="47dp"/>
+
+<TextView
+android:id="@+id/axis1"
+android:textColor="@color/black"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:layout_marginLeft="8dp"
+android:text="N/A"
+android:layout_marginTop="350dp"/>
+
+<TextView
+android:id="@+id/axis2"
+android:textColor="@color/black"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:layout_marginLeft="8dp"
+android:text="N/A"
+android:layout_marginTop="400dp"/>
+
+<TextView
+android:id="@+id/axis3"
+android:textColor="@color/black"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:layout_marginLeft="8dp"
+android:text="N/A"
+android:layout_marginTop="450dp"/>
+
+<TextView
+android:id="@+id/axis4"
+android:textColor="@color/black"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:layout_marginLeft="8dp"
+android:text="N/A"
+android:layout_marginTop="500dp"/>
+
+<TextView
+android:id="@+id/axis5"
+android:textColor="@color/black"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:layout_marginLeft="8dp"
+android:text="N/A"
+android:layout_marginTop="550dp"/>
+
+<TextView
+android:id="@+id/axis6"
+android:textColor="@color/black"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:layout_marginLeft="8dp"
+android:text="N/A"
+android:layout_marginTop="600dp"/>
+
+
+<TextView
+android:id="@+id/axis7"
+android:textColor="@color/black"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:layout_marginLeft="8dp"
+android:text="N/A"
+android:layout_marginTop="650dp"/>
+
+
+<TextView
+android:textColor="@color/black"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:layout_marginLeft="0dp"
+android:text="Voltage (V)"
+android:layout_marginTop="505dp"
+android:rotation="270"/>
+
+<TextView
+android:textColor="@color/black"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:layout_marginLeft="200dp"
+android:text="Time (s)"
+android:layout_marginTop="515dp"/>
+-->

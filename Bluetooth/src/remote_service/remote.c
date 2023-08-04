@@ -7,7 +7,7 @@
 
 static K_SEM_DEFINE(bt_init_ok, 1, 1);
 
-static int8_t acceleration_data[6] = {0};
+static int8_t acceleration_data[240] = {0};
 //static uint8_t button_value = 5;
 
 enum bt_button_notifications_enabled notifications_enabled;
@@ -24,7 +24,6 @@ static const struct bt_data sd[] = {
 
 
 /* Declarations */
-
 static ssize_t read_accel_characteristic_cb(struct bt_conn *conn, const struct bt_gatt_attr *attr, void *buf, uint16_t len, uint16_t offset);
 void accel_chrc_ccc_cfg_changed(const struct bt_gatt_attr *attr, uint16_t value);
 
@@ -41,6 +40,53 @@ BT_GATT_PRIMARY_SERVICE(BT_UUID_REMOTE_SERVICE),
 
 
 /* Callbacks */
+
+void MTU_exchange_cb(struct bt_conn *conn, uint8_t err, struct bt_gatt_exchange_params *params)
+{
+    uint16_t payload_length;
+	if (!err) {
+		printk("MTU exchange done. "); 
+		payload_length=bt_gatt_get_mtu(conn)-3; //3 bytes ATT header
+	} else {
+		printk("MTU exchange failed (err %" PRIu8 ")", err);
+	}
+}
+
+
+void request_mtu_exchange(struct bt_conn *conn)
+{	int err;
+	static struct bt_gatt_exchange_params exchange_params;
+	exchange_params.func = MTU_exchange_cb;
+
+	err = bt_gatt_exchange_mtu(conn, &exchange_params);
+	if (err) {
+		printk("MTU exchange failed (err %d)", err);
+	} else {
+		printk("MTU exchange pending");
+	}
+
+}
+
+/*void update_mtu(struct bt_conn *conn)
+{
+    int err;
+    exchange_params.func = exchange_func;
+
+    err = bt_gatt_exchange_mtu(conn, &exchange_params);
+    if (err) {
+        printk("bt_gatt_exchange_mtu failed (err %d)", err);
+    }
+}
+
+static void exchange_func(struct bt_conn *conn, uint8_t att_err,
+			  struct bt_gatt_exchange_params *params)
+{
+	printk("MTU exchange %s", att_err == 0 ? "successful" : "failed");
+    if (!att_err) {
+        uint16_t payload_mtu = bt_gatt_get_mtu(conn) - 3;   // 3 bytes used for Attribute headers.
+        printk("New MTU: %d bytes", payload_mtu);
+    }
+}*/
 
 
 void on_sent(struct bt_conn *conn, void *user_data)
@@ -80,22 +126,24 @@ int send_button_notification(struct bt_conn *conn)
 
     params.attr = attr;
     params.data = &acceleration_data;
-    params.len = 6;
+    params.len = 240;
     params.func = on_sent;
+
 
     err = bt_gatt_notify_cb(conn, &params);
 
     return err;
 }
 
-void set_accel_status(int32_t x_int, int32_t x_dec, int32_t y_int, int32_t y_dec, int32_t z_int, int32_t z_dec)
+void set_accel_status(int8_t x_int, int8_t x_dec, int8_t y_int, int8_t y_dec, int8_t z_int, int8_t z_dec, int count)
 {
-    acceleration_data[0] = x_int;
-    acceleration_data[1] = x_dec;
-    acceleration_data[2] = y_int;
-    acceleration_data[3] = y_dec;
-    acceleration_data[4] = z_int;
-    acceleration_data[5] = z_dec;
+    int factor = count * 6;
+    acceleration_data[factor] = x_int;
+    acceleration_data[factor+1] = x_dec;
+    acceleration_data[factor+2] = y_int;
+    acceleration_data[factor+3] = y_dec;
+    acceleration_data[factor+4] = z_int;
+    acceleration_data[factor+5] = z_dec;
 }
 
 int bluetooth_init(struct bt_conn_cb *bt_cb, struct bt_remote_service_cb *remote_cb)

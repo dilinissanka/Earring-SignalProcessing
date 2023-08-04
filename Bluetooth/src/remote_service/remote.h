@@ -36,7 +36,7 @@ struct bt_remote_service_cb {
 };
 
 
-
+void request_mtu_exchange(struct bt_conn *conn);
 int send_button_notification(struct bt_conn *conn);
-void set_accel_status(int32_t x_int, int32_t x_dec, int32_t y_int, int32_t y_dec, int32_t z_int, int32_t z_dec);
+void set_accel_status(int8_t x_int, int8_t x_dec, int8_t y_int, int8_t y_dec, int8_t z_int, int8_t z_dec, int count);
 int bluetooth_init(struct bt_conn_cb *bt_cb, struct bt_remote_service_cb *remote_cb);

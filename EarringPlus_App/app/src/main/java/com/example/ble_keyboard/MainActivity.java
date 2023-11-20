@@ -601,10 +601,11 @@ public class MainActivity extends AppCompatActivity {
                      */
                     @Override
                     public void onCharacteristicChanged(byte[] data) {
-                        int data_length = 238;   // 34 * 7 bytes
-                        int ppg_data_length = 34;
+                        System.out.println(data.length);
+                        int data_length = 240;   // 30 * 7 bytes
+                        int ppg_data_length = 30;
                         int[] ppg_data_array = new int[ppg_data_length];
-                        int accl_data_length = 34;
+                        int accl_data_length = 30;
                         float[] accl_x_data_array = new float[accl_data_length];
                         float[] accl_y_data_array = new float[accl_data_length];
                         float[] accl_z_data_array = new float[accl_data_length];
@@ -617,32 +618,38 @@ public class MainActivity extends AppCompatActivity {
                         float z=0;
 
                         int i=0;
-                        for(i=0; i<data_length; i=i+7){
-                            // convert accl bytes to float
-                            accl_x = ((data[i+1]&0xFF) << 8) | (data[i]&0xFF);
-                            accl_y = ((data[i+3]&0xFF) << 8) | (data[i+2]&0xFF);
-                            accl_z = ((data[i+5]&0xFF) << 8) | (data[i+4]&0xFF);
-                            if ((accl_x & 0x8000) != 0) {
-                                accl_x = -((int)(0xFFFF - accl_x + 1));
-                            }
-                            if ((accl_y & 0x8000) != 0) {
-                                accl_y = -((int)(0xFFFF - accl_y + 1));
-                            }
-                            if ((accl_z & 0x8000) != 0) {
-                                accl_z = -((int)(0xFFFF - accl_z + 1));
-                            }
-                            accl_x = accl_x >> 2;
-                            accl_y = accl_y >> 2;
-                            accl_z = accl_z >> 2;
-                            x = accl_x * 0.244f * 9.8f/1000.0f; // convert to mg unit then convert to m/s^2 unit. 0.244 is from datasheet
-                            y = accl_y * 0.244f * 9.8f/1000.0f;
-                            z = accl_z * 0.244f * 9.8f/1000.0f;
-                            accl_x_data_array[(i)/7] = x;
-                            accl_y_data_array[(i)/7] = y;
-                            accl_z_data_array[(i)/7] = z;
-                            ppg_data = data[i+6];
-                            ppg_data_array[i/7] = ppg_data;
+                        for(i=0; i<ppg_data_length; i=i+1){
+                            ppg_data = (int) ((data[i*2]&0xFF) << 8) | (data[i*2+1]&0xFF);;   // data[i+6] is unsigned
+//                            ppg_data = (int) ( ((data[i*3]&0xFF) << 16) | ((data[i*3+1]&0xFF) << 8) | ((data[i*3+2])&0xFF) );   // data[i+6] is unsigned
+                            ppg_data_array[i] = ppg_data;
                         }
+//                        for(i=0; i<data_length; i=i+8){
+//                            // convert accl bytes to float
+//                            accl_x = ((data[i+1]&0xFF) << 8) | (data[i]&0xFF);
+//                            accl_y = ((data[i+3]&0xFF) << 8) | (data[i+2]&0xFF);
+//                            accl_z = ((data[i+5]&0xFF) << 8) | (data[i+4]&0xFF);
+//                            if ((accl_x & 0x8000) != 0) {
+//                                accl_x = -((int)(0xFFFF - accl_x + 1));
+//                            }
+//                            if ((accl_y & 0x8000) != 0) {
+//                                accl_y = -((int)(0xFFFF - accl_y + 1));
+//                            }
+//                            if ((accl_z & 0x8000) != 0) {
+//                                accl_z = -((int)(0xFFFF - accl_z + 1));
+//                            }
+//                            accl_x = accl_x >> 2;
+//                            accl_y = accl_y >> 2;
+//                            accl_z = accl_z >> 2;
+//                            x = accl_x * 0.244f * 9.8f/1000.0f; // convert to mg unit then convert to m/s^2 unit. 0.244 is from datasheet
+//                            y = accl_y * 0.244f * 9.8f/1000.0f;
+//                            z = accl_z * 0.244f * 9.8f/1000.0f;
+//                            accl_x_data_array[(i)/8] = x;
+//                            accl_y_data_array[(i)/8] = y;
+//                            accl_z_data_array[(i)/8] = z;
+////                            ppg_data = (int)(0x00FF & data[i+7]);   // data[i+6] is unsigned
+//                            ppg_data = (int) ((data[i+6]&0xFF) << 8) | (data[i+7]&0xFF);;   // data[i+6] is unsigned
+//                            ppg_data_array[i/8] = ppg_data;
+//                        }
 
                         // Here we will be setting the value of the necklace to the right value
 //                        Necklace dataRecievedNecklace = necklaceList.get(0);
@@ -671,6 +678,7 @@ public class MainActivity extends AppCompatActivity {
                         }
 
 
+
                         // Here we will be inserting the data we got into a file
                         for(i=0; i<ppg_data_length; i++){
                             String stringToWrite = formattedDateTime + ", " + Integer.toString(ppg_data_array[i]) + "\n";
@@ -683,36 +691,36 @@ public class MainActivity extends AppCompatActivity {
                             }
                         }
 
-                        for(i=0; i<accl_data_length; i++){
-                            String stringToWrite = formattedDateTime + ", " + Float.toString(accl_x_data_array[i]) + "\n";
-                            try {
-                                File f = new File("/storage/emulated/0/EarringPlus/", "Accelerometer_x.txt");
-                                FileOutputStream fos = new FileOutputStream(f, true);
-                                fos.write((stringToWrite).getBytes());
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        for(i=0; i<accl_data_length; i++){
-                            String stringToWrite = formattedDateTime + ", " + Float.toString(accl_y_data_array[i]) + "\n";
-                            try {
-                                File f = new File("/storage/emulated/0/EarringPlus/", "Accelerometer_y.txt");
-                                FileOutputStream fos = new FileOutputStream(f, true);
-                                fos.write((stringToWrite).getBytes());
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        for(i=0; i<accl_data_length; i++){
-                            String stringToWrite = formattedDateTime + ", " + Float.toString(accl_z_data_array[i]) + "\n";
-                            try {
-                                File f = new File("/storage/emulated/0/EarringPlus/", "Accelerometer_z.txt");
-                                FileOutputStream fos = new FileOutputStream(f, true);
-                                fos.write((stringToWrite).getBytes());
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
+//                        for(i=0; i<accl_data_length; i++){
+//                            String stringToWrite = formattedDateTime + ", " + Float.toString(accl_x_data_array[i]) + "\n";
+//                            try {
+//                                File f = new File("/storage/emulated/0/EarringPlus/", "Accelerometer_x.txt");
+//                                FileOutputStream fos = new FileOutputStream(f, true);
+//                                fos.write((stringToWrite).getBytes());
+//                            } catch (Exception e) {
+//                                e.printStackTrace();
+//                            }
+//                        }
+//                        for(i=0; i<accl_data_length; i++){
+//                            String stringToWrite = formattedDateTime + ", " + Float.toString(accl_y_data_array[i]) + "\n";
+//                            try {
+//                                File f = new File("/storage/emulated/0/EarringPlus/", "Accelerometer_y.txt");
+//                                FileOutputStream fos = new FileOutputStream(f, true);
+//                                fos.write((stringToWrite).getBytes());
+//                            } catch (Exception e) {
+//                                e.printStackTrace();
+//                            }
+//                        }
+//                        for(i=0; i<accl_data_length; i++){
+//                            String stringToWrite = formattedDateTime + ", " + Float.toString(accl_z_data_array[i]) + "\n";
+//                            try {
+//                                File f = new File("/storage/emulated/0/EarringPlus/", "Accelerometer_z.txt");
+//                                FileOutputStream fos = new FileOutputStream(f, true);
+//                                fos.write((stringToWrite).getBytes());
+//                            } catch (Exception e) {
+//                                e.printStackTrace();
+//                            }
+//                        }
                     }
 
                     /**
@@ -956,17 +964,15 @@ public class MainActivity extends AppCompatActivity {
         if (contents.size() > start_i + max_total_points){
             end_i = start_i + max_total_points;
         }
-        System.out.println("start i " + start_i);
-        System.out.println("end i " + end_i);
 
-        String[] information0 = contents.get(0).split(", ");
-        float voltage0 = Integer.parseInt(information0[1]);
-        float minVoltage = voltage0;
-        float maxVoltage = voltage0;
+        String[] information0 = contents.get(start_i).split(", ");
+        Integer voltage0 = Integer.parseInt(information0[1]);
+        Integer minVoltage = voltage0;
+        Integer maxVoltage = voltage0;
 
         for (int i = start_i; i < end_i; i++) {
             String[] information = contents.get(i).split(", ");
-            float y = Integer.parseInt(information[1]);
+            Integer y = Integer.parseInt(information[1]);
             if (minVoltage > y) {
                 minVoltage = y;
             }
@@ -975,12 +981,12 @@ public class MainActivity extends AppCompatActivity {
             }
             double x = ((i - start_i) * total_seconds * 1.0)/(max_total_points*1.0);
 
-            series.appendData(new DataPoint(x, y), true, contents.size());
+            series.appendData(new DataPoint(x, (double)(y)), true, contents.size());
         }
         System.out.println("minVoltage  " + minVoltage);
         System.out.println("maxVoltage  " + maxVoltage);
         // This function will be dealing with the axis of the graph
-        plotAxis(0, total_seconds, minVoltage, maxVoltage);
+        plotAxis(0, total_seconds, minVoltage-100, maxVoltage+100);
 
         // Here we will be adding the line to the graph and formatting it as well
         PPGGraph.addSeries(series);
@@ -1003,8 +1009,8 @@ public class MainActivity extends AppCompatActivity {
         PPGGraph.getViewport().setMinX(minTime);
         PPGGraph.getViewport().setMaxX(maxTime);
         PPGGraph.getViewport().setYAxisBoundsManual(true);
-        PPGGraph.getViewport().setMinY(minVoltage-10000);
-        PPGGraph.getViewport().setMaxY(maxVoltage*1.1);
+        PPGGraph.getViewport().setMinY(minVoltage);
+        PPGGraph.getViewport().setMaxY(maxVoltage);
 
     }
 
@@ -1081,7 +1087,7 @@ public class MainActivity extends AppCompatActivity {
         LineGraphSeries<DataPoint> series = new LineGraphSeries<>();
 
         int sample_rate = 50;   // defined in Accl chip
-        int total_seconds = 10;  // we plan to draw 5 seconds of data
+        int total_seconds = 8;  // we plan to draw 5 seconds of data
         int max_total_points = sample_rate * total_seconds;
 
         int start_i = 0;
